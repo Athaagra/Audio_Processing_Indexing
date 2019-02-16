@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Nov 13 16:58:52 2018
+
+@author: sakis
+"""
+from sklearn.preprocessing import StandardScaler
+import os
+os.chdir('/home/sakis/Desktop/smallset/')
+import IPython.display as ipd
+ipd.Audio('9f2d59cb-7e87-48ae-b21c.wav')
+import pandas as pd
+import librosa
+import librosa.display
+import glob
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.fftpack import fft
+from scipy import signal
+from scipy.io import wavfile
+from sklearn import metrics 
+import numpy as np
+import pandas as pd
+import librosa
+from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
+data,sample_rate = librosa.load('9f4a6ae7-fb07-4396-b6b3.wav')
+plt.figure(figsize=(12,4))
+librosa.display.waveplot(data,sr=sample_rate)
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt  
+import numpy as np  
+from sklearn.cluster import KMeans 
+
+
+#useful for getting number of files
+audio_files = glob.glob('*.wav')
+documents = []
+for file in audio_files:
+    documents.append(file)
+
+df = pd.DataFrame(documents)
+
+
+def job(df):
+    #df = pd.read_csv('../input/train.csv')
+
+    #Classes = df.Class.unique().tolist()
+    new_X = []
+    #for i in df.ID:
+    for i in df[0]:
+        new, rate = librosa.load(str(i))
+        mfccs = np.mean(librosa.feature.mfcc(y=new, sr=rate, n_mfcc=200).T, axis = 0)
+        #idx = Classes.index(df[df.ID == i]['Class'].tolist()[0])
+        #yp.append(idx)
+        print (i)
+        new_X.append(mfccs)
+    return new_X
+
+features_mfccs = job(df)
+x_train ,x_test = train_test_split(features_mfccs,test_size=0.2,random_state=0) 
+sc = StandardScaler()
+Xtrain = sc.fit_transform(x_train)
+Xtest = sc.transform(x_test)
+kmeans = KMeans(n_clusters=2)  
+kmeans.fit(Xtrain)  
+print(kmeans.cluster_centers_)
+print(kmeans.labels_)
+kmeans.fit(Xtest)  
+print(kmeans.cluster_centers_)
+print(kmeans.labels_)   
+
+
+
+
+
+
+
+
